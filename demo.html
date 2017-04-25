@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+<div id="home">
+	<select>
+		<option value="">请选择省</option>
+	</select>
+	<select >
+		<option value="">请选择市</option>
+	</select>
+	<select >
+		<option value="">请选择区</option>
+	</select>
+</div>
+<script src="js/LocationData.js"></script>
+<script>
+/*console.log(areaJson);
+
+var json={
+	a:1,
+	b:2
+}
+for(var i in json){
+	console.log(i,json[i]);
+}*/
+
+var areaObj={
+	selectProvinceNode:null,
+	province:areaJson.province,//省的数据，json类型
+	city:areaJson["city"],//地级市数据，json类型
+	district:areaJson.district,//区县数据，json类型
+	$$:function(selector){
+		return document.querySelectorAll(selector);
+	},
+	optionCreate:function(json,contentNode){//创造option；json表示数据并且是json类型;contentNode表示容器节点
+		var frag=document.createDocumentFragment();//碎片
+		for(var i in json){
+			var optionNode=document.createElement("option");
+			optionNode.value=i;//i表示json的属性
+			optionNode.innerHTML=json[i];//json[i]表示对应i属性的值
+			frag.appendChild(optionNode);			
+		}
+		contentNode.appendChild(frag);		
+	},
+	provinceChange:function(){//绑定第1个select事件onchange
+		var	that=this;
+		that.provinceNode.onchange=function(){//判断是否为直辖市，台湾，香港，澳门
+			
+			var	val=this.value;
+			var	thePro=that.province[val]	
+			console.log(thePro=="北京")
+			if(thePro=="北京" ||  thePro=="天津" ||  that.provinceNode.value=="重庆" ||  thePro=="上海" ||  thePro=="澳门" ||  thePro=="香港"){
+				that.districtNode.disabled="true";
+				that.districtNode.style.display="none";//直辖市一级，隐藏区一级选项
+				that.cityeNode.innerHTML="<option value=\"\">请选择区</option>";//将市一级选项改为区一级
+			}else{				
+				that.districtNode.style.display="";
+				that.districtNode.disabled="true";
+				that.cityeNode.innerHTML="<option value=\"\">请选择市</option>";
+			}						
+			that.cityeNode.value="";
+			//改变省一级的名称是，出去市一级，区一级的默认值
+			that.districtNode.innerHTML="<option value=\"\">请选择区</option>";
+			var	theVal=this.value;
+			that.optionCreate(that.city[theVal],that.cityeNode);//得到对应市一级的名称
+		}
+	},
+	cityChange:function(){//绑定第二个select事件onchange
+		var	that=this;
+		that.cityeNode.onchange=function(){
+			that.districtNode.value="";
+			that.districtNode.disabled="";
+			that.districtNode.innerHTML="<option value=\"\">请选择区</option>";
+			var	theVal=this.value;
+			that.optionCreate(that.district[theVal],that.districtNode);//得到区一级的名称
+		}		
+	},
+	init:function(){//初始化
+		var that=this;
+		that.provinceNode=that.$$("#home select")[0];
+		that.cityeNode=that.$$("#home select")[1];
+		that.districtNode=that.$$("#home select")[2];
+		that.optionCreate(that.province,that.provinceNode);//创建省		
+		that.provinceChange();
+		that.cityChange();
+
+	}
+};
+areaObj.init();
+</script>
+</body>
+</html>
